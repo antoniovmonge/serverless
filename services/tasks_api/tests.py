@@ -87,7 +87,9 @@ def test_open_tasks_listed(dynamodb_table):
 
 def test_closed_tasks_listed(dynamodb_table):
     repository = TaskStore(table_name=dynamodb_table)
-    open_task = Task.create(uuid.uuid4(), "Apply to Trevenque Group", "antonio@email.com")
+    open_task = Task.create(
+        uuid.uuid4(), "Apply to Trevenque Group", "antonio@email.com"
+    )
     closed_task = Task(
         uuid.uuid4(), "Apply to Trevenque Group", TaskStatus.CLOSED, "antonio@email.com"
     )
