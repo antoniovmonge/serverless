@@ -63,7 +63,7 @@ def dynamodb_table():
 
 def test_added_task_retrieved_by_id(dynamodb_table):
     repository = TaskStore(table_name=dynamodb_table)
-    task = Task.create(uuid.uuid4(), "Apply to Grupo Trevenque", "antonio@email.com")
+    task = Task.create(uuid.uuid4(), "Apply to Trevenque Group", "antonio@email.com")
 
     repository.add(task)
 
@@ -73,13 +73,26 @@ def test_added_task_retrieved_by_id(dynamodb_table):
 def test_open_tasks_listed(dynamodb_table):
     repository = TaskStore(table_name=dynamodb_table)
     open_task = Task.create(
-        uuid.uuid4(), "Apply to Grupo Trevenque", "antonio@email.com"
+        uuid.uuid4(), "Apply to Trevenque Group", "antonio@email.com"
     )
     closed_task = Task(
-        uuid.uuid4(), "Apply to Grupo Trevenque", TaskStatus.CLOSED, "antonio@email.com"
+        uuid.uuid4(), "Apply to Trevenque Group", TaskStatus.CLOSED, "antonio@email.com"
     )
 
     repository.add(open_task)
     repository.add(closed_task)
 
     assert repository.list_open(owner=open_task.owner) == [open_task]
+
+
+def test_closed_tasks_listed(dynamodb_table):
+    repository = TaskStore(table_name=dynamodb_table)
+    open_task = Task.create(uuid.uuid4(), "Apply to Trevenque Group", "antonio@email.com")
+    closed_task = Task(
+        uuid.uuid4(), "Apply to Trevenque Group", TaskStatus.CLOSED, "antonio@email.com"
+    )
+
+    repository.add(open_task)
+    repository.add(closed_task)
+
+    assert repository.list_closed(owner=open_task.owner) == [closed_task]
