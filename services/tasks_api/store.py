@@ -8,27 +8,12 @@ from models import Task, TaskStatus
 
 
 class TaskStore:
-    def __init__(self, table_name):
+    def __init__(self, table_name, dynamodb_url=None):  # new
         self.table_name = table_name
-
-    def get_by_id(self, task_id, owner):
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table(self.table_name)
-        record = table.get_item(
-            Key={
-                "PK": f"#{owner}",
-                "SK": f"#{task_id}",
-            },
-        )
-        return Task(
-            id=UUID(record["Item"]["id"]),
-            title=record["Item"]["title"],
-            owner=record["Item"]["owner"],
-            status=TaskStatus[record["Item"]["status"]],
-        )
+        self.dynamodb_url = dynamodb_url  # new
 
     def add(self, task):
-        dynamodb = boto3.resource("dynamodb")
+        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)  # new
         table = dynamodb.Table(self.table_name)
         table.put_item(
             Item={
@@ -43,19 +28,35 @@ class TaskStore:
             }
         )
 
+    def get_by_id(self, task_id, owner):
+        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)  # new
+        table = dynamodb.Table(self.table_name)
+        record = table.get_item(
+            Key={
+                "PK": f"#{owner}",
+                "SK": f"#{task_id}",
+            },
+        )
+        return Task(
+            id=UUID(record["Item"]["id"]),
+            title=record["Item"]["title"],
+            owner=record["Item"]["owner"],
+            status=TaskStatus[record["Item"]["status"]],
+        )
+
     def list_open(self, owner):
-        return self._list_by_status(owner, TaskStatus.OPEN)
+        return self._list_by_status(owner, "OPEN")
 
     def list_closed(self, owner):
-        return self._list_by_status(owner, TaskStatus.CLOSED)
+        return self._list_by_status(owner, "CLOSED")
 
     def _list_by_status(self, owner, status):
-        dynamodb = boto3.resource("dynamodb")
+        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)  # new
         table = dynamodb.Table(self.table_name)
         last_key = None
         query_kwargs = {
             "IndexName": "GS1",
-            "KeyConditionExpression": Key("GS1PK").eq(f"#{owner}#{status.value}"),
+            "KeyConditionExpression": Key("GS1PK").eq(f"#{owner}#{status}"),
         }
         tasks = []
         while True:
