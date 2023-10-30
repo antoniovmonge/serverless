@@ -12,7 +12,7 @@ provider:
   logRetentionInDays: 90
   environment:
     APP_ENVIRONMENT: ${self:provider.stage}
-  iam:  # new
+  iam:
     role:
       statements:
         - Effect: Allow
@@ -56,4 +56,5 @@ plugins:
   - serverless-python-requirements
 
 resources:
+  - ${file(resources/cognito.yml)}
   - ${file(resources/dynamodb.yml)}

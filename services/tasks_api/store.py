@@ -8,12 +8,12 @@ from models import Task, TaskStatus
 
 
 class TaskStore:
-    def __init__(self, table_name, dynamodb_url=None):  # new
+    def __init__(self, table_name, dynamodb_url=None):
         self.table_name = table_name
-        self.dynamodb_url = dynamodb_url  # new
+        self.dynamodb_url = dynamodb_url
 
     def add(self, task):
-        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)  # new
+        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)
         table = dynamodb.Table(self.table_name)
         table.put_item(
             Item={
@@ -29,7 +29,7 @@ class TaskStore:
         )
 
     def get_by_id(self, task_id, owner):
-        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)  # new
+        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)
         table = dynamodb.Table(self.table_name)
         record = table.get_item(
             Key={
@@ -51,7 +51,7 @@ class TaskStore:
         return self._list_by_status(owner, "CLOSED")
 
     def _list_by_status(self, owner, status):
-        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)  # new
+        dynamodb = boto3.resource("dynamodb", endpoint_url=self.dynamodb_url)
         table = dynamodb.Table(self.table_name)
         last_key = None
         query_kwargs = {
