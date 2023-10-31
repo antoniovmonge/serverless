@@ -9,7 +9,7 @@ from starlette import status
 
 from config import Config
 from models import Task
-from schemas import APITask, CreateTask
+from schemas import APITask, CreateTask, APITaskList
 from store import TaskStore
 
 app = FastAPI()
@@ -39,8 +39,18 @@ def health_check():
     return {"message": "OK"}
 
 
+@app.get("/api/open-tasks", response_model=APITaskList)
+def open_tasks(
+    user_email: str = Depends(get_user_email),
+    task_store: TaskStore = Depends(get_task_store),
+):
+    return APITaskList(results=task_store.list_open(owner=user_email))
+
+
 @app.post(
-    "/api/create-task", response_model=APITask, status_code=status.HTTP_201_CREATED
+    "/api/create-task",
+    response_model=APITask,
+    status_code=status.HTTP_201_CREATED,
 )
 def create_task(
     parameters: CreateTask,

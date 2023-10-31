@@ -33,8 +33,19 @@ def id_token(user_email):
     return jwt.encode({"cognito:username": user_email}, "secret")
 
 
+def test_health_check(client):
+    """
+    GIVEN
+    WHEN health check endpoint is called with GET method
+    THEN response with status 200 and body OK is returned
+    """
+    response = client.get("api/health-check")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"message": "OK"}
+
+
 def test_create_task(client, user_email, id_token):
-    title = "Clean your desk"
+    title = "Get familiar with AWS"
     response = client.post(
         "/api/create-task", json={"title": title}, headers={"Authorization": id_token}
     )
@@ -47,15 +58,20 @@ def test_create_task(client, user_email, id_token):
     assert body["owner"] == user_email
 
 
-def test_health_check(client):
-    """
-    GIVEN
-    WHEN health check endpoint is called with GET method
-    THEN response with status 200 and body OK is returned
-    """
-    response = client.get("api/health-check")
+def test_list_open_tasks(client, user_email, id_token):
+    title = "Learn Serverless"
+    client.post(
+        "/api/create-task", json={"title": title}, headers={"Authorization": id_token}
+    )
+
+    response = client.get("/api/open-tasks", headers={"Authorization": id_token})
+    body = response.json()
+
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"message": "OK"}
+    assert body["results"][0]["id"]
+    assert body["results"][0]["title"] == title
+    assert body["results"][0]["owner"] == user_email
+    assert body["results"][0]["status"] == "OPEN"
 
 
 @pytest.fixture
