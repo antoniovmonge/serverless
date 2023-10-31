@@ -18,8 +18,13 @@ class APITask(BaseModel):
     class Config:
         from_attributes = True
 
+
 class APITaskList(BaseModel):
     results: list[APITask]
 
     class Config:
         from_attributes = True
+
+
+class CloseTask(BaseModel):
+    id: UUID
