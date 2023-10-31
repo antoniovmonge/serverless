@@ -73,6 +73,7 @@ def test_list_open_tasks(client, user_email, id_token):
     assert body["results"][0]["owner"] == user_email
     assert body["results"][0]["status"] == TaskStatus.OPEN.value
 
+
 def test_close_task(client, user_email, id_token):
     title = "Read a book"
     response = client.post(
@@ -91,6 +92,7 @@ def test_close_task(client, user_email, id_token):
     assert body["title"] == title
     assert body["owner"] == user_email
     assert body["status"] == TaskStatus.CLOSED.value
+
 
 @pytest.fixture
 def dynamodb_table():
