@@ -47,7 +47,9 @@ def test_health_check(client):
 def test_create_task(client, user_email, id_token):
     title = "Get familiar with AWS"
     response = client.post(
-        "/api/create-task", json={"title": title}, headers={"Authorization": id_token}
+        "/api/create-task",
+        json={"title": title},
+        headers={"Authorization": id_token},
     )
     body = response.json()
 
@@ -61,10 +63,15 @@ def test_create_task(client, user_email, id_token):
 def test_list_open_tasks(client, user_email, id_token):
     title = "Learn Serverless"
     client.post(
-        "/api/create-task", json={"title": title}, headers={"Authorization": id_token}
+        "/api/create-task",
+        json={"title": title},
+        headers={"Authorization": id_token},
     )
 
-    response = client.get("/api/open-tasks", headers={"Authorization": id_token})
+    response = client.get(
+        "/api/open-tasks",
+        headers={"Authorization": id_token},
+    )
     body = response.json()
 
     assert response.status_code == status.HTTP_200_OK
@@ -77,7 +84,9 @@ def test_list_open_tasks(client, user_email, id_token):
 def test_close_task(client, user_email, id_token):
     title = "Read a book"
     response = client.post(
-        "/api/create-task", json={"title": title}, headers={"Authorization": id_token}
+        "/api/create-task",
+        json={"title": title},
+        headers={"Authorization": id_token},
     )
 
     response = client.post(
@@ -92,6 +101,32 @@ def test_close_task(client, user_email, id_token):
     assert body["title"] == title
     assert body["owner"] == user_email
     assert body["status"] == TaskStatus.CLOSED.value
+
+
+def test_list_closed_tasks(client, user_email, id_token):
+    title = "Ride big waves"
+    response = client.post(
+        "/api/create-task",
+        json={"title": title},
+        headers={"Authorization": id_token},
+    )
+    client.post(
+        "/api/close-task",
+        json={"id": response.json()["id"]},
+        headers={"Authorization": id_token},
+    )
+
+    response = client.get(
+        "/api/closed-tasks",
+        headers={"Authorization": id_token},
+    )
+    body = response.json()
+
+    assert response.status_code == status.HTTP_200_OK
+    assert body["results"][0]["id"]
+    assert body["results"][0]["title"] == title
+    assert body["results"][0]["owner"] == user_email
+    assert body["results"][0]["status"] == TaskStatus.CLOSED.value
 
 
 @pytest.fixture
@@ -130,7 +165,11 @@ def dynamodb_table():
 
 def test_added_task_retrieved_by_id(dynamodb_table):
     repository = TaskStore(table_name=dynamodb_table)
-    task = Task.create(uuid.uuid4(), "Apply to Trevenque Group", "antonio@email.com")
+    task = Task.create(
+        uuid.uuid4(),
+        "Apply to Trevenque Group",
+        "antonio@email.com",
+    )
 
     repository.add(task)
 
@@ -143,7 +182,10 @@ def test_open_tasks_listed(dynamodb_table):
         uuid.uuid4(), "Apply to Trevenque Group", "antonio@email.com"
     )
     closed_task = Task(
-        uuid.uuid4(), "Apply to Trevenque Group", TaskStatus.CLOSED, "antonio@email.com"
+        uuid.uuid4(),
+        "Apply to Trevenque Group",
+        TaskStatus.CLOSED,
+        "antonio@email.com",
     )
 
     repository.add(open_task)
@@ -158,7 +200,10 @@ def test_closed_tasks_listed(dynamodb_table):
         uuid.uuid4(), "Apply to Trevenque Group", "antonio@email.com"
     )
     closed_task = Task(
-        uuid.uuid4(), "Apply to Trevenque Group", TaskStatus.CLOSED, "antonio@email.com"
+        uuid.uuid4(),
+        "Apply to Trevenque Group",
+        TaskStatus.CLOSED,
+        "antonio@email.com",
     )
 
     repository.add(open_task)
