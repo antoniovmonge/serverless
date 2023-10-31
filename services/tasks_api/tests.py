@@ -1,19 +1,50 @@
 import uuid
 
+import jwt
 import boto3
 import pytest
 from fastapi import status
 from moto import mock_dynamodb
 from starlette.testclient import TestClient
 
-from main import app
+from main import app, get_task_store
 from models import Task, TaskStatus
 from store import TaskStore
 
 
 @pytest.fixture
-def client():
+def task_store(dynamodb_table):
+    return TaskStore(dynamodb_table)
+
+
+@pytest.fixture
+def client(task_store):
+    app.dependency_overrides[get_task_store] = lambda: task_store
     return TestClient(app)
+
+
+@pytest.fixture
+def user_email():
+    return "bob@builder.com"
+
+
+@pytest.fixture
+def id_token(user_email):
+    return jwt.encode({"cognito:username": user_email}, "secret")
+
+
+def test_create_task(client, user_email, id_token):
+    title = "Clean your desk"
+    response = client.post(
+        "/api/create-task", json={"title": title}, headers={"Authorization": id_token}
+    )
+    body = response.json()
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert body["id"]
+    assert body["title"] == title
+    assert body["status"] == "OPEN"
+    assert body["owner"] == user_email
 
 
 def test_health_check(client):
