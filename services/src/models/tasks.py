@@ -7,6 +7,7 @@ class TaskStatus(Enum):
     """
     Enum representing the status of a task.
     """
+
     OPEN = "OPEN"
     CLOSED = "CLOSED"
 

@@ -4,8 +4,6 @@ from mangum import Mangum
 
 from src import api
 
-
-
 app = FastAPI()
 
 app.add_middleware(
