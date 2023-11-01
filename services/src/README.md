@@ -15,7 +15,7 @@ poetry add --group dev moto
 ## Run tests
 
 ```bash
-poetry run pytest tests.py
+poetry run pytest
 ```
 
 ## Code Quality
