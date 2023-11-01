@@ -2,7 +2,7 @@ name: API Test and deploy
 on:
   push:
     paths:
-      - 'services/tasks_api/**'
+      - 'services/src/**'
       - '.github/workflows/api.yml'
 
 
@@ -23,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: services/tasks_api
+        working-directory: services/src
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
@@ -51,7 +51,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: services/tasks_api
+        working-directory: services/src
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
@@ -83,7 +83,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: services/tasks_api
+        working-directory: services/src
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3

@@ -4,7 +4,7 @@ from uuid import UUID
 import boto3
 from boto3.dynamodb.conditions import Key
 
-from tasks_api.models import Task, TaskStatus
+from src.models.tasks import Task, TaskStatus
 
 
 class TaskStore:
