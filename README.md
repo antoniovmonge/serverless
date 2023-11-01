@@ -86,7 +86,7 @@ This app aims to follow Test Driven Development (TDD) principles. The tests are 
     │       │   ├── __init__.cpython-311.pyc
     │       │   └── test_tasks.cpython-311-pytest-7.4.3.pyc
     │       └── test_tasks.py
-    └── src_ui
+    └── frontend
         ├── index.html
         ├── node_modules
         │   ├── @babel ...

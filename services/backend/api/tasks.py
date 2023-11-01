@@ -9,10 +9,10 @@ import jwt
 from fastapi import APIRouter, Depends, Header
 from starlette import status
 
-from src.config import Config
-from src.models.tasks import Task
-from src.schemas.tasks import APITask, APITaskList, CloseTask, CreateTask
-from src.store import TaskStore
+from backend.config import Config
+from backend.models.tasks import Task
+from backend.schemas.tasks import APITask, APITaskList, CloseTask, CreateTask
+from backend.store import TaskStore
 
 config = Config()
 

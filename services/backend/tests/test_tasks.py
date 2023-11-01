@@ -2,8 +2,8 @@ import uuid
 
 from fastapi import status
 
-from src.models.tasks import Task, TaskStatus
-from src.store import TaskStore
+from backend.models.tasks import Task, TaskStatus
+from backend.store import TaskStore
 
 
 def test_health_check(client):

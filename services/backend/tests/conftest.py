@@ -4,9 +4,9 @@ import pytest
 from moto import mock_dynamodb
 from starlette.testclient import TestClient
 
-from src.api.tasks import get_task_store
-from src.main import app
-from src.store import TaskStore
+from backend.api.tasks import get_task_store
+from backend.main import app
+from backend.store import TaskStore
 
 
 @pytest.fixture
